@@ -32,7 +32,7 @@ class MetricsTaskSet(TaskSet):
     def login(self):
         self.client.post('/login', {"stationid": self._stationid})
 
-    @task(999)
+    @task(99)
     def post_metrics(self):
         self.client.post(
             "/metrics",
