@@ -46,20 +46,22 @@ class StationMetric(ndb.Model):
 class HomeHandler(webapp2.RequestHandler):
     def get(self):
         self.response.headers['Content-Type'] = 'text/plain'
-        self.response.write('workload simulation using containers as clients\n')
+        self.response.write('Workload Simulation Using Containers as Clients\n')
 
 
 class LoginHandler(webapp2.RequestHandler):
     def post(self):
         stationid = self.request.get('stationid')
         self.response.headers['Content-Type'] = 'text/plain'
-        self.response.write('station {} logged in\n'.format(stationid))
+        self.response.write('/login - station: {}\n'.format(stationid))
 
 
 class MetricsHandler(webapp2.RequestHandler):
     def post(self):
+        stationid = self.request.get('stationid')
+
         sm = StationMetric(
-            stationid = self.request.get('stationid'),
+            stationid = stationid,
             temperature = float(self.request.get('temperature')),
             pressure = float(self.request.get('pressure')),
             humidity = float(self.request.get('humidity')),
@@ -72,11 +74,12 @@ class MetricsHandler(webapp2.RequestHandler):
         smkey = sm.put()
         
         self.response.headers['Content-Type'] = 'text/plain'
-        self.response.write('metrics recorded {}\n'.format(smkey))
+        self.response.write('/metrics - station: {}, kind: {}, id: {}\n'.
+            format(stationid, smkey.kind(), smkey.id()))
 
 
 app = webapp2.WSGIApplication([
     (r'/', HomeHandler),
     (r'/login', LoginHandler),
     (r'/metrics', MetricsHandler),
-], debug=True)
+])
