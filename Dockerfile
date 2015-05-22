@@ -16,16 +16,16 @@
 FROM python:2.7.8
 
 # Add the external tasks directory into /tasks
-ADD tasks /tasks
+ADD locust-tasks /locust-tasks
 
 # Install the required dependencies via pip
-RUN pip install -r /tasks/requirements.txt
+RUN pip install -r /locust-tasks/requirements.txt
 
 # Expose the required Locust ports
 EXPOSE 5557 5558 8089
 
 # Set script to be executable
-RUN chmod 755 /tasks/run.sh
+RUN chmod 755 /locust-tasks/run.sh
 
 # Start Locust using LOCUS_OPTS environment variable
-ENTRYPOINT ["/tasks/run.sh"] 
+ENTRYPOINT ["/locust-tasks/run.sh"] 
