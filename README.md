@@ -11,12 +11,12 @@
 
 **Note:** when installing the Google Cloud SDK you will need to enable the following additional components:
 
-* App Engine SDK for Python and PHP
-* Compute Engine Command Line Interface
-* Developer Preview gcloud Commands
-* gcloud Alpha Commands
-* gcloud app Python Extensions
-* kubectl
+* `App Engine SDK for Python and PHP`
+* `Compute Engine Command Line Interface`
+* `Developer Preview gcloud Commands`
+* `gcloud Alpha Commands`
+* `gcloud app Python Extensions`
+* `kubectl`
 
 ## Deploy Web Application
 
