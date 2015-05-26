@@ -113,4 +113,4 @@ To execute the Locust tests, navigate to the IP address of your forwarding-rule 
 
 ## License
 
-This code is Apache 2.0 licensed and more information can be found in `LICENSE`.
+This code is Apache 2.0 licensed and more information can be found in `LICENSE`. For information on licenses for third party software and libraries, refer to the `licenses` directory.

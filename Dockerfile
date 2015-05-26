@@ -13,7 +13,13 @@
 # limitations under the License.
 
 
+# Start with a base Python 2.7.8 image
 FROM python:2.7.8
+
+MAINTAINER Sandeep Parikh <parikhs@google.com>
+
+# Add the licenses for third party software and libraries
+ADD licenses /licenses
 
 # Add the external tasks directory into /tasks
 ADD locust-tasks /locust-tasks
