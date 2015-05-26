@@ -2,7 +2,7 @@
 
 ## About
 
-[Background](http://cloud.google.com/solutions/workload-simulation-using-containers-as-clients).
+Refer to the [Workload Simulation Using Containers as Clients](http://cloud.google.com/solutions/workload-simulation-using-containers-as-clients) solutions paper.
 
 ## Prerequisites
 
