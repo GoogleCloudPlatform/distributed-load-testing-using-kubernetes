@@ -27,18 +27,6 @@ The `sample-webapp` folder contains a simple Google App Engine Python applicatio
 
 **Note:** you will need the URL of the deployed sample web application when deploying the `locust-master` and `locust-worker` controllers.
 
-## Build Docker Image (Optional)
-
-The Docker image has been pre-built and uploaded to the [Google Container Registry](http://gcr.io) however if you are interested in making changes and publishing a new image, refer to the following steps.
-
-First, [install Docker](https://docs.docker.com/installation/#installation) on your platform. Once Docker is installed and you've made changes to the `Dockerfile`, you can build, tag, and upload the image using the following steps:
-
-    $ docker build -t your-username/locust-tasks .
-    $ docker tag your-username/locust-tasks gcr.io/your-project-id/locust-tasks
-    $ gcloud preview docker --project your-project-id push gcr.io/your-project-id/locust-tasks
-
-**Note:** you are not required to use the Google Container Registry. If you'd like to publish your images to the [Docker Hub](https://hub.docker.com) please refer to the steps to [Working with Docker Hub](https://docs.docker.com/userguide/dockerrepos/).
-
 ## Deploy Controllers and Services
 
 Before deploying the `locust-master` and `locust-worker` controllers, update each to point to the location of your deployed sample web application. Set the `TARGET_HOST` environment variable found in the `spec.template.spec.containers.env` field to your sample web application URL.
@@ -49,7 +37,18 @@ Before deploying the `locust-master` and `locust-worker` controllers, update eac
 
 ### Update Controller Docker Image (Optional)
 
-The `locust-master` and `locust-worker` controllers are set to use the pre-built `locust-tasks` Docker image, available at `gcr.io/cloud-solutions-images/locust-tasks`. If you elected to rebuild the Docker image above you will need to edit the controllers with your image location. Specifically, the `spec.template.spec.containers.image` field in each controller controls which Docker image to use.
+The `locust-master` and `locust-worker` controllers are set to use the pre-built `locust-tasks` Docker image, which has been uploaded to the [Google Container Registry](http://gcr.io) and is available at `gcr.io/cloud-solutions-images/locust-tasks`. If you are interested in making changes and publishing a new Docker image, refer to the following steps.
+
+First, [install Docker](https://docs.docker.com/installation/#installation) on your platform. Once Docker is installed and you've made changes to the `Dockerfile`, you can build, tag, and upload the image using the following steps:
+
+    $ docker build -t your-username/locust-tasks .
+    $ docker tag your-username/locust-tasks gcr.io/your-project-id/locust-tasks
+    $ gcloud preview docker --project your-project-id push gcr.io/your-project-id/locust-tasks
+
+**Note:** you are not required to use the Google Container Registry. If you'd like to publish your images to the [Docker Hub](https://hub.docker.com) please refer to the steps in [Working with Docker Hub](https://docs.docker.com/userguide/dockerrepos/).
+
+
+Once the Docker image has been rebuilt and uploaded to the registry you will need to edit the controllers with your new image location. Specifically, the `spec.template.spec.containers.image` field in each controller controls which Docker image to use.
 
 If you uploaded your Docker image to the Google Container Registry:
 
