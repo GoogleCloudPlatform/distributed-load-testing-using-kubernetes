@@ -11,6 +11,7 @@ Refer to the [Workload Simulation Using Containers as Clients](http://cloud.goog
 
 **Note:** when installing the Google Cloud SDK you will need to enable the following additional components:
 
+* `App Engine Command Line Interface (Preview)`
 * `App Engine SDK for Python and PHP`
 * `Compute Engine Command Line Interface`
 * `Developer Preview gcloud Commands`
@@ -20,12 +21,13 @@ Refer to the [Workload Simulation Using Containers as Clients](http://cloud.goog
 
 ## Deploy Web Application
 
-The `sample-webapp` folder contains a simple Google App Engine Python application as the "system under test". To deploy the application to your project, first edit the `application` field in `workload-simulation/sample-webapp/app.yaml` with your desired application name. Then use the `appcfg.py` tool to upload the app.
+The `sample-webapp` folder contains a simple Google App Engine Python application as the "system under test". To deploy the application to your project use the `gcloud preview app deploy` command.
 
-    $ cd workload-simulation/sample-webapp
-    $ appcfg.py --oauth2 update .
+    $ gcloud preview app deploy sample-webapp/app.yaml
 
-## Build Docker Image
+**Note:** you will need the URL of the deployed sample web application when deploying the `locust-master` and `locust-worker` controllers.
+
+## Build Docker Image (Optional)
 
 The Docker image has been pre-built and uploaded to the [Google Container Registry](http://gcr.io) however if you are interested in making changes and publishing a new image, refer to the following steps.
 
@@ -39,7 +41,15 @@ First, [install Docker](https://docs.docker.com/installation/#installation) on y
 
 ## Deploy Controllers and Services
 
-The `locust-master` and `locust-worker` controllers are set to use the pre-built `locust-tasks` Docker image, available at [gcr.io/cloud-solutions-images/locust-tasks](http://gcr.io/cloud-solutions-images/locust-tasks). However, if you elected to rebuild the Docker image you will need to edit the controllers with your image location. Specifically, the `spec.template.spec.containers.image` field in each controller controls which Docker image to use.
+Before deploying the `locust-master` and `locust-worker` controllers, update each to point to the location of your deployed sample web application. Set the `TARGET_HOST` environment variable found in the `spec.template.spec.containers.env` field to your sample web application URL.
+
+    - name: TARGET_HOST
+      key: TARGET_HOST
+      value: http://your-application.appspot.com
+
+### Update Controller Docker Image (Optional)
+
+The `locust-master` and `locust-worker` controllers are set to use the pre-built `locust-tasks` Docker image, available at `gcr.io/cloud-solutions-images/locust-tasks`. If you elected to rebuild the Docker image above you will need to edit the controllers with your image location. Specifically, the `spec.template.spec.containers.image` field in each controller controls which Docker image to use.
 
 If you uploaded your Docker image to the Google Container Registry:
 
@@ -109,7 +119,7 @@ The only traffic we need to allow externally is to the Locust web interface, run
 
 ## Execute Tests
 
-To execute the Locust tests, navigate to the IP address of your forwarding-rule and port `8089` and enter the number of clients to spawn and the client hatch rate.
+To execute the Locust tests, navigate to the IP address of your forwarding-rule (see above) and port `8089` and enter the number of clients to spawn and the client hatch rate.
 
 ## License
 
