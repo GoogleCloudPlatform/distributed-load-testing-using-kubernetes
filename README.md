@@ -19,6 +19,11 @@ Refer to the [Workload Simulation Using Containers as Clients](http://cloud.goog
 * `gcloud app Python Extensions`
 * `kubectl`
 
+Optionally, you can also set your preferred zone and project:
+
+    $ gcloud config set compute/zone your-preferred-zone
+    $ gcloud config set project your-project-name
+
 ## Deploy Web Application
 
 The `sample-webapp` folder contains a simple Google App Engine Python application as the "system under test". To deploy the application to your project use the `gcloud preview app deploy` command.
