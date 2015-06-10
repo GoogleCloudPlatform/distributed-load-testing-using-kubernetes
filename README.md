@@ -19,10 +19,10 @@ Refer to the [Workload Simulation Using Containers as Clients](http://cloud.goog
 * `gcloud app Python Extensions`
 * `kubectl`
 
-Optionally, you can also set your preferred zone and project:
+Before continuing, you can also set your preferred zone and project:
 
-    $ gcloud config set compute/zone your-preferred-zone
-    $ gcloud config set project your-project-name
+    $ gcloud config set compute/zone ZONE
+    $ gcloud config set project PROJECT-ID
 
 ## Deploy Web Application
 
@@ -38,7 +38,7 @@ Before deploying the `locust-master` and `locust-worker` controllers, update eac
 
     - name: TARGET_HOST
       key: TARGET_HOST
-      value: http://your-application.appspot.com
+      value: http://YOUR-APPLICATION.appspot.com
 
 ### Update Controller Docker Image (Optional)
 
@@ -46,9 +46,9 @@ The `locust-master` and `locust-worker` controllers are set to use the pre-built
 
 First, [install Docker](https://docs.docker.com/installation/#installation) on your platform. Once Docker is installed and you've made changes to the `Dockerfile`, you can build, tag, and upload the image using the following steps:
 
-    $ docker build -t your-username/locust-tasks .
-    $ docker tag your-username/locust-tasks gcr.io/your-project-id/locust-tasks
-    $ gcloud preview docker --project your-project-id push gcr.io/your-project-id/locust-tasks
+    $ docker build -t USERNAME/locust-tasks .
+    $ docker tag USERNAME/locust-tasks gcr.io/PROJECT-ID/locust-tasks
+    $ gcloud preview docker --project PROJECT-ID push gcr.io/PROJECT-ID/locust-tasks
 
 **Note:** you are not required to use the Google Container Registry. If you'd like to publish your images to the [Docker Hub](https://hub.docker.com) please refer to the steps in [Working with Docker Hub](https://docs.docker.com/userguide/dockerrepos/).
 
@@ -57,26 +57,25 @@ Once the Docker image has been rebuilt and uploaded to the registry you will nee
 
 If you uploaded your Docker image to the Google Container Registry:
 
-    image: gcr.io/your-project-id/locust-tasks:latest
+    image: gcr.io/PROJECT-ID/locust-tasks:latest
 
 If you uploaded your Docker image to the Docker Hub:
 
-    image: your-username/locust-tasks:latest
+    image: USERNAME/locust-tasks:latest
 
 **Note:** the image location includes the `latest` tag so that the image is pulled down every time a new Pod is launched. To use a Kubernetes-cached copy of the image, remove `:latest` from the image location.
 
 ### Deploy Kubernetes Cluster
 
-First create the [Google Container Engine](http://cloud.google.com/container-engine) cluster:
+First create the [Google Container Engine](http://cloud.google.com/container-engine) cluster using the `gcloud` command (this command defaults to creating a three node Kubernetes cluster (not counting the master) using the `n1-standard-1` machine type, refer to the `gcloud` [documentation](https://cloud.google.com/sdk/gcloud/reference/alpha/container/clusters/create) for information on specifying a different configuration).
 
-    $ gcloud alpha container clusters create your-cluster-name
+    $ gcloud alpha container clusters create CLUSTER-NAME
 
 After a few minutes, you'll have a working Kubernetes cluster with three nodes (not counting the Kubernetes master). Next, configure your system to use the `kubectl` command:
 
-    $ export KUBECONFIG=/Users/your-username/.config/gcloud/kubernetes/kubeconfig
-    $ kubectl config use-context gke_your-project-id_us-central1-b_your-cluster-name
+    $ kubectl config use-context gke_PROJECT-ID_ZONE_CLUSTER-NAME
 
-**Note:** the output from the previous `gcloud` command will contain the specific commands you'll need to execute for your platform/project.
+**Note:** the output from the previous `gcloud` cluster create command will contain the specific `kubectl config` command to execute for your platform/project.
 
 ### Deploy locust-master
 
@@ -119,7 +118,7 @@ The final step in deploying these controllers and services is to allow traffic f
 
 The only traffic we need to allow externally is to the Locust web interface, running on the `locust-master` Pod at port `8089`. To create the firewall rule, execute the following:
 
-    $ gcloud compute firewall-rules create firewall-rule-name --allow=tcp:8089 --target-tags k8s-cluster-name-node
+    $ gcloud compute firewall-rules create firewall-rule-name --allow=tcp:8089 --target-tags k8s-CLUSTER-NAME-node
 
 ## Execute Tests
 
@@ -127,4 +126,4 @@ To execute the Locust tests, navigate to the IP address of your forwarding-rule 
 
 ## License
 
-This code is Apache 2.0 licensed and more information can be found in `LICENSE`. For information on licenses for third party software and libraries, refer to the `licenses` directory.
+This code is Apache 2.0 licensed and more information can be found in `LICENSE`. For information on licenses for third party software and libraries, refer to the `docker-image/licenses` directory.
