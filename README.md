@@ -1,8 +1,8 @@
-# Workload Simulation Using Containers as Clients
+# Simulating Workloads Using Containers as Clients
 
 ## About
 
-Refer to the [Workload Simulation Using Containers as Clients](http://cloud.google.com/solutions/workload-simulation-using-containers-as-clients) solutions paper.
+Refer to the [Simulating Workloads Using Containers as Clients](http://cloud.google.com/solutions/simulating-workloads-using-containers-as-clients) solutions paper.
 
 ## Prerequisites
 
