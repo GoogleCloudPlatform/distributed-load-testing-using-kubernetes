@@ -28,7 +28,7 @@ Before continuing, you can also set your preferred zone and project:
 
 The `sample-webapp` folder contains a simple Google App Engine Python application as the "system under test". To deploy the application to your project use the `gcloud preview app deploy` command.
 
-    $ gcloud preview app deploy sample-webapp/app.yaml
+    $ gcloud preview app deploy sample-webapp/app.yaml --project=PROJECT-ID --set-default
 
 **Note:** you will need the URL of the deployed sample web application when deploying the `locust-master` and `locust-worker` controllers.
 
@@ -38,7 +38,7 @@ Before deploying the `locust-master` and `locust-worker` controllers, update eac
 
     - name: TARGET_HOST
       key: TARGET_HOST
-      value: http://YOUR-APPLICATION.appspot.com
+      value: http://PROJECT-ID.appspot.com
 
 ### Update Controller Docker Image (Optional)
 
@@ -51,7 +51,6 @@ First, [install Docker](https://docs.docker.com/installation/#installation) on y
     $ gcloud preview docker --project PROJECT-ID push gcr.io/PROJECT-ID/locust-tasks
 
 **Note:** you are not required to use the Google Container Registry. If you'd like to publish your images to the [Docker Hub](https://hub.docker.com) please refer to the steps in [Working with Docker Hub](https://docs.docker.com/userguide/dockerrepos/).
-
 
 Once the Docker image has been rebuilt and uploaded to the registry you will need to edit the controllers with your new image location. Specifically, the `spec.template.spec.containers.image` field in each controller controls which Docker image to use.
 
@@ -106,11 +105,15 @@ The `locust-worker-controller` is set to deploy 10 `locust-worker` Pods, to conf
 
     $ kubectl get pods -l name=locust,role=worker
 
-Next, deploy the `locust-worker-service`:
+To scale the number of `locust-worker` Pods, issue a replication controller `scale` command.
 
-    $ kubectl create -f locust-worker-service.yaml 
+    $ kubectl scale --replicas=20 replicationcontrollers locust-worker
 
-This step will expose the Pods with an internal DNS name (`locust-worker`) and ports `5557` and `5558`, (additionally as part of the Service layer, an internal proxy is created to load balance across the worker instances using the internal DNS name).
+To confirm that the Pods have launched and are ready, get the list of `locust-worker` Pods:
+
+    $ kubectl get pods -l name=locust,role=worker
+
+**Note:** depending on the desired number of `locust-worker` Pods, the Kubernetes cluster may need to be launched with more than 3 compute engine nodes and may also need a machine type more powerful than n1-standard-1. Refer to the [gcloud alpha container clusters create](https://cloud.google.com/sdk/gcloud/reference/alpha/container/clusters/create) documentation for more information.
 
 ### Setup Firewall Rules
 
@@ -118,11 +121,27 @@ The final step in deploying these controllers and services is to allow traffic f
 
 The only traffic we need to allow externally is to the Locust web interface, running on the `locust-master` Pod at port `8089`. To create the firewall rule, execute the following:
 
-    $ gcloud compute firewall-rules create firewall-rule-name --allow=tcp:8089 --target-tags k8s-CLUSTER-NAME-node
+    $ gcloud compute firewall-rules create FIREWALL-RULE-NAME --allow=tcp:8089 --target-tags k8s-CLUSTER-NAME-node
 
 ## Execute Tests
 
-To execute the Locust tests, navigate to the IP address of your forwarding-rule (see above) and port `8089` and enter the number of clients to spawn and the client hatch rate.
+To execute the Locust tests, navigate to the IP address of your forwarding-rule (see above) and port `8089` and enter the number of clients to spawn and the client hatch rate then start the simulation.
+
+## Deployment Cleanup
+
+To teardown the workload simulation cluster, use the following steps. First, delete the Kubernetes cluster:
+
+    $ gcloud alpha container clusters delete CLUSTER-NAME
+
+Next, delete the forwarding rule that forwards traffic into the cluster.
+
+    $ gcloud compute forwarding-rules delete FORWARDING-RULE-NAME
+
+Finally, delete the firewall rule that allows incoming traffic to the cluster.
+
+    $ gcloud compute firewall-rules delete FIREWALL-RULE-NAME
+
+To delete the sample web application, visit the [Google Cloud Console](https://console.developers.google.com).
 
 ## License
 
