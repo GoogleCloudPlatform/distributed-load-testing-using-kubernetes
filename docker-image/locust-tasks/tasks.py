@@ -15,7 +15,6 @@
 # limitations under the License.
 
 
-import random
 import uuid
 
 from datetime import datetime
@@ -23,32 +22,20 @@ from locust import HttpLocust, TaskSet, task
 
 
 class MetricsTaskSet(TaskSet):
-    _stationid = None
+    _deviceid = None
 
     def on_start(self):
-        self._stationid = str(uuid.uuid4())
+        self._deviceid = str(uuid.uuid4())
 
     @task(1)
     def login(self):
-        self.client.post('/login', {"stationid": self._stationid})
+        self.client.post(
+            '/login', {"deviceid": self._deviceid})
 
-    @task(99)
+    @task(999)
     def post_metrics(self):
         self.client.post(
-            "/metrics",
-            {
-                "stationid": self._stationid,
-                "timestamp": datetime.now(),
-                "temperature": random.uniform(0,100),
-                "pressure": random.uniform(0,100),
-                "humidity": random.uniform(0,100),
-                "windspeed": random.uniform(0,100),
-                "precipitation": random.uniform(0,100),
-                "dropsize": random.uniform(0,100),
-                "visibility": random.uniform(0,100),
-                "ceiling": random.uniform(0,100)
-            }
-        )
+            "/metrics", {"deviceid": self._deviceid, "timestamp": datetime.now()})
 
 
 class MetricsLocust(HttpLocust):
