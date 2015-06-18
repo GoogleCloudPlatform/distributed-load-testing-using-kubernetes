@@ -21,7 +21,7 @@ import webapp2
 class HomeHandler(webapp2.RequestHandler):
     def get(self):
         self.response.headers['Content-Type'] = 'text/plain'
-        self.response.write('Welcome to Simulating Workloads Using Containers as Clients\n')
+        self.response.write('Welcome to the "Distributed Load Testing Using Kubernetes" sample web app\n')
 
 
 class LoginHandler(webapp2.RequestHandler):

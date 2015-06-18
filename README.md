@@ -1,8 +1,6 @@
-# Simulating Workloads Using Containers as Clients
+## Distributed Load Testing Using Kubernetes
 
-## About
-
-Refer to the [Simulating Workloads Using Containers as Clients](http://cloud.google.com/solutions/simulating-workloads-using-containers-as-clients) solutions paper.
+This tutorial demonstrates how to conduct distributed load testing using [Kubernetes](http://kubernetes.io) and includes a sample web application, Docker image, and Kubernetes controllers/services. For more background refer to the [Distributed Load Testing Using Kubernetes](http://cloud.google.com/solutions/distributed-load-testing-using-kubernetes) solutions paper.
 
 ## Prerequisites
 
@@ -66,7 +64,9 @@ If you uploaded your Docker image to the Docker Hub:
 
 ### Deploy Kubernetes Cluster
 
-First create the [Google Container Engine](http://cloud.google.com/container-engine) cluster using the `gcloud` command (this command defaults to creating a three node Kubernetes cluster (not counting the master) using the `n1-standard-1` machine type, refer to the `gcloud` [documentation](https://cloud.google.com/sdk/gcloud/reference/alpha/container/clusters/create) for information on specifying a different configuration).
+First create the [Google Container Engine](http://cloud.google.com/container-engine) cluster using the `gcloud` command as shown below. 
+
+**Note:** This command defaults to creating a three node Kubernetes cluster (not counting the master) using the `n1-standard-1` machine type. Refer to the [`gcloud alpha container clusters create`](https://cloud.google.com/sdk/gcloud/reference/alpha/container/clusters/create) documentation information on specifying a different cluster configuration.
 
     $ gcloud alpha container clusters create CLUSTER-NAME
 
@@ -113,7 +113,7 @@ To confirm that the Pods have launched and are ready, get the list of `locust-wo
 
     $ kubectl get pods -l name=locust,role=worker
 
-**Note:** depending on the desired number of `locust-worker` Pods, the Kubernetes cluster may need to be launched with more than 3 compute engine nodes and may also need a machine type more powerful than n1-standard-1. Refer to the [gcloud alpha container clusters create](https://cloud.google.com/sdk/gcloud/reference/alpha/container/clusters/create) documentation for more information.
+**Note:** depending on the desired number of `locust-worker` Pods, the Kubernetes cluster may need to be launched with more than 3 compute engine nodes and may also need a machine type more powerful than n1-standard-1. Refer to the [`gcloud alpha container clusters create`](https://cloud.google.com/sdk/gcloud/reference/alpha/container/clusters/create) documentation for more information.
 
 ### Setup Firewall Rules
 
