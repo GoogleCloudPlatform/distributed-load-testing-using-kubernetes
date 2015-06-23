@@ -14,7 +14,7 @@
 
 
 kind: Service
-apiVersion: v1beta3
+apiVersion: v1
 metadata:
   name: locust-master
   labels:
@@ -37,4 +37,4 @@ spec:
   selector:
     name: locust
     role: master
-  createExternalLoadBalancer: true
+  type: LoadBalancer
