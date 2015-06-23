@@ -119,9 +119,17 @@ To confirm that the Pods have launched and are ready, get the list of `locust-wo
 
 The final step in deploying these controllers and services is to allow traffic from your publicly accessible forwarding-rule IP address to the appropriate Container Engine instances.
 
-The only traffic we need to allow externally is to the Locust web interface, running on the `locust-master` Pod at port `8089`. To create the firewall rule, execute the following:
+The only traffic we need to allow externally is to the Locust web interface, running on the `locust-master` Pod at port `8089`. First, get the target tags for the nodes in your Kubernetes cluster using the output from `kubectl get nodes`:
 
-    $ gcloud compute firewall-rules create FIREWALL-RULE-NAME --allow=tcp:8089 --target-tags k8s-CLUSTER-NAME-node
+    $ kubectl get nodes
+    NAME                        LABELS                                             STATUS
+    gke-ws-0e365264-node-4pdw   kubernetes.io/hostname=gke-ws-0e365264-node-4pdw   Ready
+    gke-ws-0e365264-node-jdcz   kubernetes.io/hostname=gke-ws-0e365264-node-jdcz   Ready
+    gke-ws-0e365264-node-kp3d   kubernetes.io/hostname=gke-ws-0e365264-node-kp3d   Ready
+
+The target tag is the node name prefix up to `-node` and is formatted as `gke-CLUSTER-NAME-[...]-node`. Now to create the firewall rule, execute the following:
+
+    $ gcloud compute firewall-rules create FIREWALL-RULE-NAME --allow=tcp:8089 --target-tags gke-CLUSTER-NAME-[...]-node
 
 ## Execute Tests
 
