@@ -1,6 +1,6 @@
 ## Distributed Load Testing Using Kubernetes
 
-This tutorial demonstrates how to conduct distributed load testing using [Kubernetes](http://kubernetes.io) and includes a sample web application, Docker image, and Kubernetes controllers/services. For more background refer to the [Distributed Load Testing Using Kubernetes](http://cloud.google.com/solutions/distributed-load-testing-using-kubernetes) solutions paper.
+This tutorial demonstrates how to conduct distributed load testing using [Kubernetes](http://kubernetes.io) and includes a sample web application, Docker image, and Kubernetes controllers/services. For more background refer to the [Distributed Load Testing Using Kubernetes](http://cloud.google.com/solutions/distributed-load-testing-using-kubernetes) solution paper.
 
 ## Prerequisites
 
@@ -127,7 +127,9 @@ The only traffic we need to allow externally is to the Locust web interface, run
     gke-ws-0e365264-node-jdcz   kubernetes.io/hostname=gke-ws-0e365264-node-jdcz   Ready
     gke-ws-0e365264-node-kp3d   kubernetes.io/hostname=gke-ws-0e365264-node-kp3d   Ready
 
-The target tag is the node name prefix up to `-node` and is formatted as `gke-CLUSTER-NAME-[...]-node`. Now to create the firewall rule, execute the following:
+The target tag is the node name prefix up to `-node` and is formatted as `gke-CLUSTER-NAME-[...]-node`. For example, if your node name is `gke-mycluster-12345678-node-abcd`, the target tag would be `gke-mycluster-12345678-node`. 
+
+Now to create the firewall rule, execute the following:
 
     $ gcloud compute firewall-rules create FIREWALL-RULE-NAME --allow=tcp:8089 --target-tags gke-CLUSTER-NAME-[...]-node
 
