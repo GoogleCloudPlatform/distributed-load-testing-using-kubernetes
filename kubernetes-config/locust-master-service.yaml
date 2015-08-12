@@ -23,17 +23,17 @@ metadata:
 spec:
   ports:
     - port: 8089
-      targetPort: locust-master-web
+      targetPort: loc-master-web
       protocol: TCP
-      name: locust-master-web
+      name: loc-master-web
     - port: 5557
-      targetPort: locust-master-port-1
+      targetPort: loc-master-p1
       protocol: TCP
-      name: locust-master-port-1
+      name: loc-master-p1
     - port: 5558
-      targetPort: locust-master-port-2
+      targetPort: loc-master-p2
       protocol: TCP
-      name: locust-master-port-2
+      name: loc-master-p2
   selector:
     name: locust
     role: master

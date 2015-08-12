@@ -42,12 +42,12 @@ spec:
               key: TARGET_HOST
               value: http://workload-simulation-webapp.appspot.com
           ports:
-            - name: locust-master-web
+            - name: loc-master-web
               containerPort: 8089
               protocol: TCP
-            - name: locust-master-port-1
+            - name: loc-master-p1
               containerPort: 5557
               protocol: TCP
-            - name: locust-master-port-2
+            - name: loc-master-p2
               containerPort: 5558
               protocol: TCP
