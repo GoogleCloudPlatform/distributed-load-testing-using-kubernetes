@@ -35,7 +35,6 @@ The `sample-webapp` folder contains a simple Google App Engine Python applicatio
 Before deploying the `locust-master` and `locust-worker` controllers, update each to point to the location of your deployed sample web application. Set the `TARGET_HOST` environment variable found in the `spec.template.spec.containers.env` field to your sample web application URL.
 
     - name: TARGET_HOST
-      key: TARGET_HOST
       value: http://PROJECT-ID.appspot.com
 
 ### Update Controller Docker Image (Optional)
@@ -68,11 +67,15 @@ First create the [Google Container Engine](http://cloud.google.com/container-eng
 
 **Note:** This command defaults to creating a three node Kubernetes cluster (not counting the master) using the `n1-standard-1` machine type. Refer to the [`gcloud alpha container clusters create`](https://cloud.google.com/sdk/gcloud/reference/alpha/container/clusters/create) documentation information on specifying a different cluster configuration.
 
-    $ gcloud alpha container clusters create CLUSTER-NAME
+    $ gcloud container clusters create CLUSTER-NAME
+
+You may also set this as your default cluster
+
+    $ gcloud config container/cluster CLUSTER-NAME
 
 After a few minutes, you'll have a working Kubernetes cluster with three nodes (not counting the Kubernetes master). Next, configure your system to use the `kubectl` command:
 
-    $ kubectl config use-context gke_PROJECT-ID_ZONE_CLUSTER-NAME
+    $ kubectl container clusters get-credentials CLUSTER-NAME
 
 **Note:** the output from the previous `gcloud` cluster create command will contain the specific `kubectl config` command to execute for your platform/project.
 
@@ -141,7 +144,7 @@ To execute the Locust tests, navigate to the IP address of your forwarding-rule 
 
 To teardown the workload simulation cluster, use the following steps. First, delete the Kubernetes cluster:
 
-    $ gcloud alpha container clusters delete CLUSTER-NAME
+    $ gcloud container clusters delete CLUSTER-NAME
 
 Next, delete the forwarding rule that forwards traffic into the cluster.
 
