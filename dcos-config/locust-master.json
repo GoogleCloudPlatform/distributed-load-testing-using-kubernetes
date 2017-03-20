@@ -1,0 +1,89 @@
+{
+  "volumes": [],
+  "id": "/locust-master",
+  "cmd": null,
+  "args": null,
+  "user": null,
+  "env": {
+    "LOCUST_MODE": "master",
+    "TARGET_HOST": "http://workload-simulation-webapp.appspot.com"
+  },
+  "instances": 1,
+  "cpus": 0.5,
+  "mem": 256,
+  "disk": 0,
+  "gpus": 0,
+  "executor": "",
+  "constraints": [],
+  "fetch": [],
+  "storeUrls": [],
+  "backoffSeconds": 1,
+  "backoffFactor": 1.15,
+  "maxLaunchDelaySeconds": 3600,
+  "container": {
+    "type": "DOCKER",
+    "volumes": [],
+    "docker": {
+      "image": "gcr.io/cloud-solutions-images/locust-tasks:latest",
+      "network": "HOST",
+      "portMappings": null,
+      "privileged": false,
+      "parameters": [],
+      "forcePullImage": false
+    }
+  },
+  "healthChecks": [
+    {
+      "path": "/",
+      "protocol": "HTTP",
+      "portIndex": 0,
+      "gracePeriodSeconds": 300,
+      "intervalSeconds": 60,
+      "timeoutSeconds": 20,
+      "maxConsecutiveFailures": 3,
+      "ignoreHttp1xx": false
+    }
+  ],
+  "readinessChecks": [],
+  "dependencies": [],
+  "upgradeStrategy": {
+    "minimumHealthCapacity": 0,
+    "maximumOverCapacity": 0
+  },
+  "labels": {
+    "HAPROXY_GROUP": "external",
+    "MARATHON_SINGLE_INSTANCE_APP": "true"
+  },
+  "acceptedResourceRoles": null,
+  "ipAddress": null,
+  "residency": null,
+  "secrets": {},
+  "taskKillGracePeriodSeconds": null,
+  "portDefinitions": [
+    {
+      "port": 8089,
+      "protocol": "tcp",
+      "name": "loc-master-web",
+      "labels": {
+        "VIP_0": "locust-master:8089"
+      }
+    },
+    {
+      "port": 5557,
+      "protocol": "tcp",
+      "name": "loc-master-p1",
+      "labels": {
+        "VIP_1": "locust-master:5557"
+      }
+    },
+    {
+      "port": 5558,
+      "protocol": "tcp",
+      "name": "loc-master-p2",
+      "labels": {
+        "VIP_2": "locust-master:5558"
+      }
+    }
+  ],
+  "requirePorts": true
+}

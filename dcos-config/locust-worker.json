@@ -1,0 +1,17 @@
+{
+  "id": "/locust-worker",
+  "instances": 10,
+  "container": {
+    "type": "DOCKER",
+    "docker": {
+      "image": "gcr.io/cloud-solutions-images/locust-tasks:latest"
+    }
+  },
+  "cpus": 0.3,
+  "mem": 256,
+  "labels": {
+    "LOCUST_MODE": "worker",
+    "LOCUST_MASTER": "locust-master",
+    "TARGET_HOST": "http://workload-simulation-webapp.appspot.com"
+  }
+}
