@@ -184,7 +184,7 @@ Verify there is a rule with tcp:8089 pointing to the correct target_tag by runni
 
 To execute the Locust tests, navigate to the IP address of your forwarding-rule (see above) and port `8089`, run:
 
-    $ kubectl svc list
+    $ kubectl get svc
 
 Use the IP_ADDRESS to access the console on port 8089
 
