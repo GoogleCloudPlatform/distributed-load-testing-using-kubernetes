@@ -20,9 +20,11 @@ This tutorial demonstrates how to conduct distributed load testing using [Kubern
 
 ** Update March 2017
 After installing the google cloud SDK, run the following
+
     $ gcloud init
 
-Chose to login, a web page will open. Chose allow in the permissions dialog, when complete a success message will display
+Chose to login, a web page will open. Chose allow in the permissions dialog, when complete a success message will display.
+
 Swap back to the console window.
 Select "Y" to indicate that you wish to configure compute engine.
 You will be given choices for projects and zones
@@ -110,7 +112,7 @@ Next, configure your system to use the `kubectl` command:
 **Note:** the output from the previous `gcloud` cluster create command will contain the specific `kubectl config` command to execute for your platform/project.
 
 
-For more information on kubectl commands check out kubectl cheat sheet:  https://kubernetes.io/docs/user-guide/kubectl-cheatsheet/
+For more information on kubectl commands check out kubectl cheat sheet:  [Kubernetes Cheat Sheet](https://kubernetes.io/docs/user-guide/kubectl-cheatsheet/)
 
 
 ### Deploy locust-master
@@ -205,14 +207,17 @@ chose a pod and use the name in the below:
 
 To teardown the workload simulation cluster, use the following steps. First, delete the Kubernetes cluster:
 
+    $ gcloud container clusters list
     $ gcloud container clusters delete CLUSTER-NAME
 
 Next, delete the forwarding rule that forwards traffic into the cluster.
 
+    $ gcloud compute forwarding-rules list
     $ gcloud compute forwarding-rules delete FORWARDING-RULE-NAME
 
 Finally, delete the firewall rule that allows incoming traffic to the cluster.
 
+    $ gcloud compute firewall-rules list
     $ gcloud compute firewall-rules delete FIREWALL-RULE-NAME
 
 To delete the sample web application, visit the [Google Cloud Console](https://console.developers.google.com).
