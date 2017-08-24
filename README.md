@@ -24,9 +24,9 @@ Before continuing, you can also set your preferred zone and project:
 
 ## Deploy Web Application
 
-The `sample-webapp` folder contains a simple Google App Engine Python application as the "system under test". To deploy the application to your project use the `gcloud preview app deploy` command.
+The `sample-webapp` folder contains a simple Google App Engine Python application as the "system under test". To deploy the application to your project use the `gcloud app deploy` command.
 
-    $ gcloud preview app deploy sample-webapp/app.yaml --project=PROJECT-ID --set-default
+    $ gcloud app deploy sample-webapp/app.yaml --project=PROJECT-ID --set-default
 
 **Note:** you will need the URL of the deployed sample web application when deploying the `locust-master` and `locust-worker` controllers.
 
