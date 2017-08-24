@@ -35,7 +35,6 @@ The `sample-webapp` folder contains a simple Google App Engine Python applicatio
 Before deploying the `locust-master` and `locust-worker` controllers, update each to point to the location of your deployed sample web application. Set the `TARGET_HOST` environment variable found in the `spec.template.spec.containers.env` field to your sample web application URL.
 
     - name: TARGET_HOST
-      key: TARGET_HOST
       value: http://PROJECT-ID.appspot.com
 
 ### Update Controller Docker Image (Optional)
