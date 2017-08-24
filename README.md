@@ -17,16 +17,40 @@ This tutorial demonstrates how to conduct distributed load testing using [Kubern
 * `gcloud app Python Extensions`
 * `kubectl`
 
+
+** Update March 2017
+After installing the google cloud SDK, run the following
+
+    $ gcloud init
+
+Chose to login, a web page will open. Chose allow in the permissions dialog, when complete a success message will display.
+
+Swap back to the console window.
+Select "Y" to indicate that you wish to configure compute engine.
+You will be given choices for projects and zones
+
 Before continuing, you can also set your preferred zone and project:
 
     $ gcloud config set compute/zone ZONE
-    $ gcloud config set project PROJECT-ID
+    $ gcloud config set core/project PROJECT-ID
+
+
+** Update March 2017
+After setting the preferred zone and project, you can verify the configuration:
+
+    $ gcloud config list
+
+## Install kubectl
+
+    $ gcloud components install kubectl
+    $ gcloud container clusters get-credentials PROJECT-ID
+    $ gcloud auth application-default login
 
 ## Deploy Web Application
 
 The `sample-webapp` folder contains a simple Google App Engine Python application as the "system under test". To deploy the application to your project use the `gcloud preview app deploy` command.
 
-    $ gcloud preview app deploy sample-webapp/app.yaml --project=PROJECT-ID --set-default
+    $ gcloud app deploy sample-webapp/app.yaml --project=PROJECT-ID --set-default
 
 **Note:** you will need the URL of the deployed sample web application when deploying the `locust-master` and `locust-worker` controllers.
 
@@ -67,17 +91,32 @@ First create the [Google Container Engine](http://cloud.google.com/container-eng
 
 **Note:** This command defaults to creating a three node Kubernetes cluster (not counting the master) using the `n1-standard-1` machine type. Refer to the [`gcloud alpha container clusters create`](https://cloud.google.com/sdk/gcloud/reference/alpha/container/clusters/create) documentation information on specifying a different cluster configuration.
 
-    $ gcloud alpha container clusters create CLUSTER-NAME
+    $ gcloud container clusters create CLUSTER-NAME
 
-After a few minutes, you'll have a working Kubernetes cluster with three nodes (not counting the Kubernetes master). Next, configure your system to use the `kubectl` command:
+After a few minutes, you'll have a working Kubernetes cluster with three nodes (not counting the Kubernetes master). To see the cluster deatails issue the following:
+
+    $ gcloud container clusters list
+
+Try running:
+
+    $ kubectl cluster-info
+
+If cluster information is displayed, the following may not be necessary...
+
+
+Next, configure your system to use the `kubectl` command:
 
     $ kubectl config use-context gke_PROJECT-ID_ZONE_CLUSTER-NAME
 
 **Note:** the output from the previous `gcloud` cluster create command will contain the specific `kubectl config` command to execute for your platform/project.
 
+
+For more information on kubectl commands check out kubectl cheat sheet:  [Kubernetes Cheat Sheet](https://kubernetes.io/docs/user-guide/kubectl-cheatsheet/)
+
+
 ### Deploy locust-master
 
-Now that `kubectl` is setup, deploy the `locust-master-controller`:
+Now that `kubectl` is setup, deploy the `locust-master-controller`, cd to the kubernetes-config directory, and run :
 
     $ kubectl create -f locust-master-controller.yaml
 
@@ -92,7 +131,9 @@ Next, deploy the `locust-master-service`:
 
 This step will expose the Pod with an internal DNS name (`locust-master`) and ports `8089`, `5557`, and `5558`. As part of this step, the `type: LoadBalancer` directive in `locust-master-service.yaml` will tell Google Container Engine to create a Google Compute Engine forwarding-rule from a publicly avaialble IP address to the `locust-master` Pod. To view the newly created forwarding-rule, execute the following:
 
-    $ gcloud compute forwarding-rules list 
+    $ gcloud compute forwarding-rules list
+
+    $ kubectl get svc
 
 ### Deploy locust-worker
 
@@ -132,22 +173,50 @@ Now to create the firewall rule, execute the following:
 
     $ gcloud compute firewall-rules create FIREWALL-RULE-NAME --allow=tcp:8089 --target-tags gke-CLUSTER-NAME-[...]-node
 
+
+Verify there is a rule with tcp:8089 pointing to the correct target_tag by running:
+
+    $ gcloud compute firewall-rules list
+
+
 ## Execute Tests
 
-To execute the Locust tests, navigate to the IP address of your forwarding-rule (see above) and port `8089` and enter the number of clients to spawn and the client hatch rate then start the simulation.
+To execute the Locust tests, navigate to the IP address of your forwarding-rule (see above) and port `8089`, run:
+
+    $ kubectl get svc
+
+Use the IP_ADDRESS to access the console on port 8089
+
+enter the number of clients to spawn and the client hatch rate then start the simulation.
+
+
+To watch the demo application / System Under Test run:
+
+    $ gcloud app logs tail -s default
+
+To check out the logs on the pods:
+
+    $ kubectl get pods
+
+chose a pod and use the name in the below:
+
+    $ kubectl logs --tail=20 POD_NAME
 
 ## Deployment Cleanup
 
 To teardown the workload simulation cluster, use the following steps. First, delete the Kubernetes cluster:
 
-    $ gcloud alpha container clusters delete CLUSTER-NAME
+    $ gcloud container clusters list
+    $ gcloud container clusters delete CLUSTER-NAME
 
 Next, delete the forwarding rule that forwards traffic into the cluster.
 
+    $ gcloud compute forwarding-rules list
     $ gcloud compute forwarding-rules delete FORWARDING-RULE-NAME
 
 Finally, delete the firewall rule that allows incoming traffic to the cluster.
 
+    $ gcloud compute firewall-rules list
     $ gcloud compute firewall-rules delete FIREWALL-RULE-NAME
 
 To delete the sample web application, visit the [Google Cloud Console](https://console.developers.google.com).

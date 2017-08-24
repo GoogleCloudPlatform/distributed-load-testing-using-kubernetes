@@ -14,7 +14,6 @@
 
 
 kind: ReplicationController
-apiVersion: v1
 metadata:
   name: locust-worker
   labels:
