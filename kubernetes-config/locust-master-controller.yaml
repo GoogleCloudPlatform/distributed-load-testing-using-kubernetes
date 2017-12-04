@@ -33,13 +33,11 @@ spec:
     spec:
       containers:
         - name: locust
-          image: gcr.io/cloud-solutions-images/locust-tasks:latest
+          image: gcr.io/bxb-plm-poc/locust-tasks:latest
           env:
             - name: LOCUST_MODE
-              key: LOCUST_MODE
               value: master
             - name: TARGET_HOST
-              key: TARGET_HOST
               value: http://workload-simulation-webapp.appspot.com
           ports:
             - name: loc-master-web
