@@ -12,9 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-kind: ReplicationController
-apiVersion: v1
+apiVersion: apps/v1beta2 # for versions before 1.8.0 use apps/v1beta1. For version 1.9 use apps/v1
+kind: Deployment
 metadata:
   name: locust-master
   labels:
@@ -23,8 +22,9 @@ metadata:
 spec:
   replicas: 1
   selector:
-    name: locust
-    role: master
+    matchLabels:
+      name: locust
+      role: master
   template:
     metadata:
       labels:
@@ -36,10 +36,8 @@ spec:
           image: gcr.io/cloud-solutions-images/locust-tasks:latest
           env:
             - name: LOCUST_MODE
-              key: LOCUST_MODE
               value: master
             - name: TARGET_HOST
-              key: TARGET_HOST
               value: http://workload-simulation-webapp.appspot.com
           ports:
             - name: loc-master-web
