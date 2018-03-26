@@ -13,8 +13,8 @@
 # limitations under the License.
 
 
-kind: ReplicationController
-apiVersion: v1
+apiVersion: apps/v1 # for versions before 1.8.0 use apps/v1beta1. For version 1.9 use apps/v1
+kind: Deployment
 metadata:
   name: locust-master
   labels:
@@ -23,8 +23,9 @@ metadata:
 spec:
   replicas: 1
   selector:
-    name: locust
-    role: master
+    matchLabels:
+      name: locust
+      role: master
   template:
     metadata:
       labels:
@@ -33,14 +34,14 @@ spec:
     spec:
       containers:
         - name: locust
-          image: gcr.io/cloud-solutions-images/locust-tasks:latest
+          image: gcr.io/$projectId/locust-tasks:latest
+          command: [ "/bin/bash", "-c", "--" ]
+          args: [ "/locust-tasks/run.sh" ]
           env:
             - name: LOCUST_MODE
-              key: LOCUST_MODE
               value: master
             - name: TARGET_HOST
-              key: TARGET_HOST
-              value: http://workload-simulation-webapp.appspot.com
+              value: $targetHost
           ports:
             - name: loc-master-web
               containerPort: 8089
