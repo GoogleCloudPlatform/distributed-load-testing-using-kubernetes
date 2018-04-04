@@ -44,3 +44,10 @@ spec:
               value: locust-master
             - name: TARGET_HOST
               value: $targetHost
+          volumeMounts:
+            - name: locust-tasks-configuration
+              mountPath: /locust-tasks/script
+      volumes:
+        - name: locust-tasks-configuration
+          configMap:
+            name: locust-tasks-configuration

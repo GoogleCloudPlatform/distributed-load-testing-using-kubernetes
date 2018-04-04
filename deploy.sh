@@ -9,4 +9,5 @@ fi
 sed -i "s/\$targetHost/http:\/\/${PROJECT_ID}.appspot.com/g;s/\$projectId/${PROJECT_ID}/g" kubernetes-config/locust-master-deployment.yaml
 sed -i "s/\$targetHost/http:\/\/${PROJECT_ID}.appspot.com/g;s/\$projectId/${PROJECT_ID}/g" kubernetes-config/locust-worker-deployment.yaml
 
+kubectl create configmap locust-tasks-configuration --from-file=config/tasks.py
 kubectl apply -f kubernetes-config

@@ -52,3 +52,10 @@ spec:
             - name: loc-master-p2
               containerPort: 5558
               protocol: TCP
+          volumeMounts:
+            - name: locust-tasks-configuration
+              mountPath: /locust-tasks/script
+      volumes:
+        - name: locust-tasks-configuration
+          configMap:
+            name: locust-tasks-configuration
