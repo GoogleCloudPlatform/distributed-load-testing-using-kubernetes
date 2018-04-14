@@ -80,7 +80,7 @@ After a few minutes, you'll have a working Kubernetes cluster with three nodes (
 
 Now that `kubectl` is setup, deploy the `kubernetes configuration`:
 
-    $ ./deploy.sh [PROJECT_ID]
+    $ ./deploy.sh [TARGET_HOST] [IMAGE_NAME]
 
 To confirm that the deployment  and Pod are created, run the following:
 

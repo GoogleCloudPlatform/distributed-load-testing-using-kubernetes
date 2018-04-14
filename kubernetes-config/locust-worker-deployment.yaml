@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
         - name: locust
-          image: gcr.io/$projectId/locust-tasks:latest
+          image: $imageName
           command: [ "/bin/bash", "-c", "--" ]
           args: [ "/locust-tasks/run.sh" ]
           env:
@@ -42,8 +42,9 @@ spec:
               value: worker
             - name: LOCUST_MASTER
               value: locust-master
-            - name: TARGET_HOST
-              value: $targetHost
+          envFrom:
+            - configMapRef:
+                name: environment-variable
           volumeMounts:
             - name: locust-tasks-configuration
               mountPath: /locust-tasks/script
