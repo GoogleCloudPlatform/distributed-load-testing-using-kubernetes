@@ -34,14 +34,15 @@ spec:
     spec:
       containers:
         - name: locust
-          image: gcr.io/$projectId/locust-tasks:latest
+          image: $imageName
           command: [ "/bin/bash", "-c", "--" ]
           args: [ "/locust-tasks/run.sh" ]
           env:
             - name: LOCUST_MODE
               value: master
-            - name: TARGET_HOST
-              value: $targetHost
+          envFrom:
+            - configMapRef:
+                name: environment-variable
           ports:
             - name: loc-master-web
               containerPort: 8089
