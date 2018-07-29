@@ -17,6 +17,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: locust-master
+  namespace: load-test
   labels:
     name: locust
     role: master

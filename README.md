@@ -78,9 +78,20 @@ After a few minutes, you'll have a working Kubernetes cluster with three nodes (
 
 ### Deploy locust-master
 
-Now that `kubectl` is setup, deploy the `kubernetes configuration`:
+Now that `kubectl` is setup, deploy the `k8s`.
 
-    $ ./deploy.sh [TARGET_HOST] [IMAGE_NAME]
+please add tasks.py on config folder and create the following configmap:
+
+```
+kubectl create configmap locust-tasks-configuration --from-file=config/tasks.py --namespace load-test
+# image name will always the same
+# just change the url
+python substitute.py --project-id <project-name> --image-name locust-tasks --image-tag <image-tag> --target-url <host>
+kubectl apply -f k8s/environment-variable.yaml
+kubectl apply -f k8s/locust-master-deployment.yaml
+kubectl apply -f k8s/locust-worker-deployment.yaml
+kubectl apply -f k8s/locust-master-service.yaml
+```
 
 To confirm that the deployment  and Pod are created, run the following:
 
