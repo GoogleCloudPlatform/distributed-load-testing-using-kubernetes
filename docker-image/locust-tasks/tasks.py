@@ -40,4 +40,3 @@ class MetricsTaskSet(TaskSet):
 
 class MetricsLocust(HttpLocust):
     task_set = MetricsTaskSet
-    
