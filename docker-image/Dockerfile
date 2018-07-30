@@ -14,7 +14,7 @@
 
 
 # Start with a base Python 2.7.8 image
-FROM python:2.7.8
+FROM python:2.7-alpine
 
 MAINTAINER Sandeep Parikh <parikhs@google.com>
 
@@ -25,7 +25,11 @@ ADD licenses /licenses
 ADD locust-tasks /locust-tasks
 
 # Install the required dependencies via pip
-RUN pip install -r /locust-tasks/requirements.txt
+RUN apk --no-cache add --virtual=.build-dep \
+      build-base \
+    && apk --no-cache add bash libzmq \
+    && pip install -r /locust-tasks/requirements.txt \
+    && apk del .build-dep
 
 # Expose the required Locust ports
 EXPOSE 5557 5558 8089
