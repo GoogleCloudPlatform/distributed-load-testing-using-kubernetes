@@ -21,7 +21,7 @@ metadata:
     name: locust
     role: worker
 spec:
-  replicas: 10
+  replicas: 1
   selector:
     name: locust
     role: worker
@@ -33,11 +33,11 @@ spec:
     spec:
       containers:
         - name: locust
-          image: gcr.io/cloud-solutions-images/locust-tasks:latest
+          image: gcr.io/scotia-tokenization/locust-tasks:latest
           env:
             - name: LOCUST_MODE
               value: worker
             - name: LOCUST_MASTER
               value: locust-master
             - name: TARGET_HOST
-              value: http://workload-simulation-webapp.appspot.com
+              value: http://104.155.150.104
