@@ -15,18 +15,29 @@
 # limitations under the License.
 
 
+import uuid
+
+from datetime import datetime
 from locust import HttpLocust, TaskSet, task
 
-class UserBehavior(TaskSet):
-    def on_start(self):
-        """ on_start is called when a Locust start before any task is scheduled """
-        self.index()
-    @task(1)
-    def index(self):
-        self.client.get("/jpa/v1/customers")
 
-class WebsiteUser(HttpLocust):
-    task_set = UserBehavior
-    min_wait = 5000
-    max_wait = 9000
+class MetricsTaskSet(TaskSet):
+    _deviceid = None
+
+    def on_start(self):
+        self._deviceid = str(uuid.uuid4())
+
+    @task(1)
+    def login(self):
+        self.client.post(
+            '/login', {"deviceid": self._deviceid})
+
+    @task(999)
+    def post_metrics(self):
+        self.client.post(
+            "/metrics", {"deviceid": self._deviceid, "timestamp": datetime.now()})
+
+
+class MetricsLocust(HttpLocust):
+    task_set = MetricsTaskSet
     
