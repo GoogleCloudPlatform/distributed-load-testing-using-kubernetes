@@ -18,8 +18,7 @@ apiVersion: v1
 metadata:
   name: locust-master
   labels:
-    name: locust
-    role: master
+    app: locust-master
 spec:
   ports:
     - port: 8089
@@ -35,6 +34,5 @@ spec:
       protocol: TCP
       name: loc-master-p2
   selector:
-    name: locust
-    role: master
+    app: locust-master
   type: LoadBalancer

@@ -12,32 +12,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-kind: ReplicationController
-apiVersion: v1
+apiVersion: "extensions/v1beta1"
+kind: "Deployment"
 metadata:
   name: locust-worker
   labels:
-    name: locust
-    role: worker
+    name: locust-worker
 spec:
-  replicas: 10
+  replicas: 5
   selector:
-    name: locust
-    role: worker
+    matchLabels:
+      app: locust-worker
   template:
     metadata:
       labels:
-        name: locust
-        role: worker
+        app: locust-worker
     spec:
       containers:
-        - name: locust
-          image: gcr.io/cloud-solutions-images/locust-tasks:latest
+        - name: locust-worker
+          image: gcr.io/[PROJECT_ID]/locust-tasks:latest
           env:
             - name: LOCUST_MODE
               value: worker
             - name: LOCUST_MASTER
               value: locust-master
             - name: TARGET_HOST
-              value: http://workload-simulation-webapp.appspot.com
+              value: https://[TARGET_HOST]
