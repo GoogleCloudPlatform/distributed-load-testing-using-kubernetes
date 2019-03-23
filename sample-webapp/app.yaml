@@ -13,10 +13,10 @@
 # limitations under the License.
 
 
-runtime: python27
-api_version: 1
-threadsafe: true
+runtime: python37
+
+instance_class: F2
 
 handlers:
 - url: /.*
-  script: app.app
+  script: auto
