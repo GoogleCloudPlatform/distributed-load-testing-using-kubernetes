@@ -76,6 +76,7 @@ After the Locust workers are deployed, you can return to the Locust master web i
                 --num-nodes "3" \
                 --enable-autoscaling --min-nodes "3" \
                 --max-nodes "10" \
+                --scopes=logging-write,storage-ro \
                 --addons HorizontalPodAutoscaling,HttpLoadBalancing
 
         $ gcloud container clusters get-credentials $CLUSTER \
