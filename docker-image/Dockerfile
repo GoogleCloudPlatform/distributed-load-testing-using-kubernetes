@@ -13,8 +13,8 @@
 # limitations under the License.
 
 
-# Start with a base Python 3.7.2 image
-FROM python:3.7.2
+# Start with a base Python 3.8.2 image
+FROM python:3.8.2
 
 # Add the licenses for third party software and libraries
 ADD licenses /licenses
