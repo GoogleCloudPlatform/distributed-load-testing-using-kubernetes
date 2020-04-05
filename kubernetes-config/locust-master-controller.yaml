@@ -44,6 +44,3 @@ spec:
             - name: loc-master-p1
               containerPort: 5557
               protocol: TCP
-            - name: loc-master-p2
-              containerPort: 5558
-              protocol: TCP

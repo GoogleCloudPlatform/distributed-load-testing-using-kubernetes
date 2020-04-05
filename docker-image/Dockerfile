@@ -26,10 +26,10 @@ ADD locust-tasks /locust-tasks
 RUN pip install -r /locust-tasks/requirements.txt
 
 # Expose the required Locust ports
-EXPOSE 5557 5558 8089
+EXPOSE 5557 8089
 
 # Set script to be executable
 RUN chmod 755 /locust-tasks/run.sh
 
 # Start Locust using LOCUS_OPTS environment variable
-ENTRYPOINT ["/locust-tasks/run.sh"] 
+ENTRYPOINT ["/locust-tasks/run.sh"]
