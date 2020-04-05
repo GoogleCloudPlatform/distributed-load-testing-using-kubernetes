@@ -44,3 +44,4 @@ spec:
             - name: loc-master-p1
               containerPort: 5557
               protocol: TCP
+      enableServiceLinks: false

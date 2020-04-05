@@ -38,3 +38,4 @@ spec:
               value: locust-master
             - name: TARGET_HOST
               value: https://[TARGET_HOST]
+      enableServiceLinks: false
