@@ -17,21 +17,17 @@ apiVersion: apps/v1 # for versions before 1.8.0 use apps/v1beta1. For version 1.
 kind: Deployment
 metadata:
   name: locust-worker
-  namespace: load-test
   labels:
-    name: locust
-    role: worker
+    name: locust-worker
 spec:
-  replicas: 10
+  replicas: 5
   selector:
     matchLabels:
-      name: locust
-      role: worker
+      app: locust-worker
   template:
     metadata:
       labels:
-        name: locust
-        role: worker
+        app: locust-worker
     spec:
       containers:
         - name: locust

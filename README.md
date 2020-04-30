@@ -37,9 +37,9 @@ Before deploying the `locust-master` and `locust-worker` controllers, update eac
     - name: TARGET_HOST
       value: http://PROJECT-ID.appspot.com
 
-### Build Locust Docker Image
+### Update Controller Docker Image (Optional)
 
-To build and publish Locust contoller Docker image, refer to the following steps.
+The `locust-master` and `locust-worker` controllers are set to use the pre-built `locust-tasks` Docker image, which has been uploaded to the [Google Container Registry](http://gcr.io) and is available at `gcr.io/cloud-solutions-images/locust-tasks`. If you are interested in making changes and publishing a new Docker image, refer to the following steps.
 
 First, [install Docker](https://docs.docker.com/installation/#installation) on your platform. Once Docker is installed and you've made changes to the `Dockerfile`, you can build, tag, and upload the image using the following steps:
 

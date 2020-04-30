@@ -19,8 +19,7 @@ metadata:
   name: locust-master
   namespace: load-test
   labels:
-    name: locust
-    role: master
+    app: locust-master
 spec:
   ports:
     - port: 8089
@@ -36,6 +35,5 @@ spec:
       protocol: TCP
       name: loc-master-p2
   selector:
-    name: locust
-    role: master
+    app: locust-master
   type: LoadBalancer
