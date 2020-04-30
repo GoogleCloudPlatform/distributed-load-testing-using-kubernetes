@@ -13,8 +13,8 @@
 # limitations under the License.
 
 
-apiVersion: "extensions/v1beta1"
-kind: "Deployment"
+apiVersion: apps/v1 # for versions before 1.8.0 use apps/v1beta1. For version 1.9 use apps/v1
+kind: Deployment
 metadata:
   name: locust-master
   labels:
@@ -30,13 +30,16 @@ spec:
         app: locust-master
     spec:
       containers:
-        - name: locust-master
-          image: gcr.io/[PROJECT_ID]/locust-tasks:latest
+        - name: locust
+          image: $appImage
+          command: [ "/bin/bash", "-c", "--" ]
+          args: [ "/locust-tasks/run.sh" ]
           env:
             - name: LOCUST_MODE
               value: master
-            - name: TARGET_HOST
-              value: https://[TARGET_HOST]
+          envFrom:
+            - configMapRef:
+                name: environment-variable
           ports:
             - name: loc-master-web
               containerPort: 8089
@@ -47,3 +50,10 @@ spec:
             - name: loc-master-p2
               containerPort: 5558
               protocol: TCP
+          volumeMounts:
+            - name: locust-tasks-configuration
+              mountPath: /locust-tasks/script
+      volumes:
+        - name: locust-tasks-configuration
+          configMap:
+            name: locust-tasks-configuration

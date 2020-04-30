@@ -1,133 +1,133 @@
-## Distribute Load Testing Using GKE
+## Distributed Load Testing Using Kubernetes
 
-## Introduction
+This tutorial demonstrates how to conduct distributed load testing using [Kubernetes](http://kubernetes.io) and includes a sample web application, Docker image, and Kubernetes controllers/services. For more background refer to the [Distributed Load Testing Using Kubernetes](http://cloud.google.com/solutions/distributed-load-testing-using-kubernetes) solution paper.
 
-Load testing is key to the development of any backend infrastructure because load tests demonstrate how well the system functions when faced with real-world demands. An important aspect of load testing is the proper simulation of user and device behavior to identify and understand any possible system bottlenecks, well in advance of deploying applications to production.
+## Prerequisites
 
-However, dedicated test infrastructure can be expensive and difficult to maintain because it is not needed on a continuous basis. Moreover, dedicated test infrastructure is often a one-time capital expense with a fixed capacity, which makes it difficult to scale load testing beyond the initial investment and can limit experimentation. This can lead to slowdowns in productivity for development teams and lead to applications that are not properly tested before production deployments.
+* Google Cloud Platform account
+* Install and setup [Google Cloud SDK](https://cloud.google.com/sdk/)
 
-## Before you begin
+**Note:** when installing the Google Cloud SDK you will need to enable the following additional components:
 
-Open Cloud Shell to execute the commands listed in this tutorial.
+* `App Engine Command Line Interface`
+* `App Engine SDK for Python and PHP`
+* `Compute Engine Command Line Interface`
+* `Developer Preview gcloud Commands`
+* `gcloud Alpha Commands`
+* `gcloud app Python Extensions`
+* `kubectl`
 
-Define environment variables for the project id, region and zone you want to use for this tutorial.
+Before continuing, you can also set your preferred zone and project:
 
-    $ PROJECT=$(gcloud config get-value project)
-    $ REGION=us-central1
-    $ ZONE=${REGION}-b
-    $ CLUSTER=gke-load-test
-    $ TARGET=${PROJECT}.appspot.com
-    $ gcloud config set compute/region $REGION 
-    $ gcloud config set compute/zone $ZONE
+    $ gcloud config set compute/zone ZONE
+    $ gcloud config set project PROJECT-ID
 
-**Note:** Following services should be enabled in your project:
-Cloud Build
-Kubernetes Engine
-Google App Engine Admin API 
-Cloud Storage
+## Deploy Web Application
 
-    $ gcloud services enable \
-        cloudbuild.googleapis.com \
-        compute.googleapis.com \
-        container.googleapis.com \
-        containeranalysis.googleapis.com \
-        containerregistry.googleapis.com 
+The `sample-webapp` folder contains a simple Google App Engine Python application as the "system under test". To deploy the application to your project use the `gcloud app deploy` command.
 
-## Load testing tasks
+    $ gcloud app deploy sample-webapp/app.yaml --project=PROJECT-ID
 
-To deploy the load testing tasks, you first deploy a load testing master and then deploy a group of load testing workers. With these load testing workers, you can create a substantial amount of traffic for testing purposes. 
+**Note:** you will need the URL of the deployed sample web application when deploying the `locust-master` and `locust-worker` controllers.
 
-**Note:** Keep in mind that generating excessive amounts of traffic to external systems can resemble a denial-of-service attack. Be sure to review the Google Cloud Platform Terms of Service and the Google Cloud Platform Acceptable Use Policy.
+## Deploy Controllers and Services
 
-## Load testing master
+Before deploying the `locust-master` and `locust-worker` controllers, update each to point to the location of your deployed sample web application. Set the `TARGET_HOST` environment variable found in the `spec.template.spec.containers.env` field to your sample web application URL.
 
-The first component of the deployment is the Locust master, which is the entry point for executing the load testing tasks described above. The Locust master is deployed with a single replica because we need only one master. 
+    - name: TARGET_HOST
+      value: http://PROJECT-ID.appspot.com
 
-The configuration for the master deployment specifies several elements, including the ports that need to be exposed by the container (`8089` for web interface, `5557` and `5558` for communicating with workers). This information is later used to configure the Locust workers. The following snippet contains the configuration for the ports:
+### Update Controller Docker Image (Optional)
 
-    ports:
-       - name: loc-master-web
-         containerPort: 8089
-         protocol: TCP
-       - name: loc-master-p1
-         containerPort: 5557
-         protocol: TCP
-       - name: loc-master-p2
-         containerPort: 5558
-         protocol: TCP
+The `locust-master` and `locust-worker` controllers are set to use the pre-built `locust-tasks` Docker image, which has been uploaded to the [Google Container Registry](http://gcr.io) and is available at `gcr.io/cloud-solutions-images/locust-tasks`. If you are interested in making changes and publishing a new Docker image, refer to the following steps.
 
-Next, we would deploy a Service to ensure that the exposed ports are accessible to other pods via `hostname:port` within the cluster, and referenceable via a descriptive port name. The use of a service allows the Locust workers to easily discover and reliably communicate with the master, even if the master fails and is replaced with a new pod by the deployment. The Locust master service also includes a directive to create an external forwarding rule at the cluster level (i.e. type of LoadBalancer), which provides the ability for external traffic to access the cluster resources. 
+First, [install Docker](https://docs.docker.com/installation/#installation) on your platform. Once Docker is installed and you've made changes to the `Dockerfile`, you can build, tag, and upload the image using the following steps:
 
-After you deploy the Locust master, you can access the web interface using the public IP address of the external forwarding rule. After you deploy the Locust workers, you can start the simulation and look at aggregate statistics through the Locust web interface.
+    $ docker build -t USERNAME/locust-tasks .
+    $ docker tag USERNAME/locust-tasks gcr.io/PROJECT-ID/locust-tasks
+    $ gcloud preview docker --project PROJECT-ID push gcr.io/PROJECT-ID/locust-tasks
 
-## Load testing workers
+**Note:** you are not required to use the Google Container Registry. If you'd like to publish your images to the [Docker Hub](https://hub.docker.com) please refer to the steps in [Working with Docker Hub](https://docs.docker.com/userguide/dockerrepos/).
 
-The next component of the deployment includes the Locust workers, which execute the load testing tasks described above. The Locust workers are deployed by a single deployment that creates multiple pods. The pods are spread out across the Kubernetes cluster. Each pod uses environment variables to control important configuration information such as the hostname of the system under test and the hostname of the Locust master. 
+Once the Docker image has been built and uploaded to the registry you will need to edit the deployments with your new image location. Specifically, the `spec.template.spec.containers.image` field in each deployment controls which Docker image to use.
 
-After the Locust workers are deployed, you can return to the Locust master web interface and see that the number of slaves corresponds to the number of deployed workers.
+If you uploaded your Docker image to the Google Container Registry:
 
-## Setup
+    image: gcr.io/PROJECT-ID/locust-tasks:latest
 
-1. Create GKE cluster
+If you uploaded your Docker image to the Docker Hub:
 
-        $ gcloud container clusters create $CLUSTER \
-                --zone $ZONE \
-                --scopes "https://www.googleapis.com/auth/cloud-platform" \
-                --num-nodes "3" \
-                --enable-autoscaling --min-nodes "3" \
-                --max-nodes "10" \
-                --addons HorizontalPodAutoscaling,HttpLoadBalancing
+    image: USERNAME/locust-tasks:latest
 
-        $ gcloud container clusters get-credentials $CLUSTER \
-        --zone $ZONE \
-        --project $PROJECT
+**Note:** the image location includes the `latest` tag so that the image is pulled down every time a new Pod is launched. To use a Kubernetes-cached copy of the image, remove `:latest` from the image location.
 
-2. Clone tutorial repo in a local directory on your cloud shell environment
+Please note that image `gcr.io/cloud-solutions-images/locust-tasks:latest` isn't available anymore, so you may need to create your own image.
 
-        $ git clone <this-repository>
+### Deploy Kubernetes Cluster
 
-3. Build docker image and store it in your project's container registry
+First create the [Google kubernetes Engine](https://cloud.google.com/kubernetes-engine/) cluster using the `gcloud` command as shown below. 
 
-        $ pushd gke-load-test
-        $ gcloud builds submit --tag gcr.io/$PROJECT/locust-tasks:latest docker-image/.
+**Note:** This command defaults to creating a three node Kubernetes cluster (not counting the master) using the `n1-standard-1` machine type. Refer to the [`gcloud alpha container clusters create`](https://cloud.google.com/sdk/gcloud/reference/container/clusters/create) documentation information on specifying a different cluster configuration.
 
-4. Deploy sample application on GAE
+    $ gcloud container clusters create [CLUSTER-NAME]
 
-        $ gcloud app deploy sample-webapp/app.yaml --project=$PROJECT
+After a few minutes, you'll have a working Kubernetes cluster with three nodes (not counting the Kubernetes master). Next, configure your system to use the `kubectl` command:
 
-5. Replace [TARGET_HOST] and [PROJECT_ID] in locust-master-controller.yaml and locust-worker-controller.yaml with the deployed endpoint and project-id respectively. 
+    $ gcloud container clusters get-credentials [CLUSTER-NAME]
 
-        $ sed -i -e "s/\[TARGET_HOST\]/$TARGET/g" kubernetes-config/locust-master-controller.yaml
-        $ sed -i -e "s/\[TARGET_HOST\]/$TARGET/g" kubernetes-config/locust-worker-controller.yaml
-        $ sed -i -e "s/\[PROJECT_ID\]/$PROJECT/g" kubernetes-config/locust-master-controller.yaml
-        $ sed -i -e "s/\[PROJECT_ID\]/$PROJECT/g" kubernetes-config/locust-worker-controller.yaml
 
-6. Deploy Locust master and worker nodes:
+### Deploy locust-master
 
-        $ kubectl apply -f kubernetes-config/locust-master-controller.yaml
-        $ kubectl apply -f kubernetes-config/locust-master-service.yaml
-        $ kubectl apply -f kubernetes-config/locust-worker-controller.yaml
+Now that `kubectl` is setup, deploy the `k8s`.
 
-7. Get the external ip of Locust master service 
+please add tasks.py on config folder and create the following configmap:
 
-        $ EXTERNAL_IP=$(kubectl get svc locust-master -o yaml | grep ip | awk -F":" '{print $NF}')
+```
+kubectl create configmap locust-tasks-configuration --from-file=config/tasks.py --namespace load-test
+# image name will always the same
+# just change the url
+python substitute.py --project-id <project-name> --image-name locust-tasks --image-tag <image-tag> --target-url <host>
+kubectl apply -f k8s/environment-variable.yaml
+kubectl apply -f k8s/locust-master-deployment.yaml
+kubectl apply -f k8s/locust-worker-deployment.yaml
+kubectl apply -f k8s/locust-master-service.yaml
+```
 
-8. Starting load testing
-The Locust master web interface enables you to execute the load testing tasks against the system under test, as shown in the following image. Access the url as http://$EXTERNAL_IP:8089.
+To confirm that the deployment  and Pod are created, run the following:
 
-To begin, specify the total number of users to simulate and a rate at which each user should be spawned. Next, click Start swarming to begin the simulation. To stop the simulation, click **Stop** and the test will terminate. The complete results can be downloaded into a spreadsheet. 
+    $ kubectl get deployments
+    $ kubectl get pods -l name=locust,role=master
 
-9. [Optional] Scaling clients
-Scaling up the number of simulated users will require an increase in the number of Locust worker pods. To increase the number of pods deployed by the deployment, Kubernetes offers the ability to resize deployments without redeploying them. For example, the following command scales the pool of Locust worker pods to 20:
+This step will expose the Pod with an internal DNS name (`locust-master`) and ports `8089`, `5557`, and `5558`. As part of this step, the `type: LoadBalancer` directive in `locust-master-service.yaml` will tell Google Container Engine to create a Google Compute Engine forwarding-rule from a publicly avaialble IP address to the `locust-master` Pod. To see the the service IP address ('LoadBalancer'), issue the below command:
+ 
+   $ kubectl get services locust-master 
 
-        $ kubectl scale deployment/locust-worker --replicas=20
+The `locust-worker-deployment` is set to deploy 10 `locust-worker` Pods, to confirm they were deployed run the following:
 
-## Cleaning up
+    $ kubectl get pods -l name=locust,role=worker
 
-    $ gcloud container clusters delete $CLUSTER --zone $ZONE
+To scale the number of `locust-worker` Pods, issue a deployment `scale` command.
+
+    $ kubectl scale --replicas=20 deployment locust-worker
+
+To confirm that the Pods have launched and are ready, get the list of `locust-worker` Pods:
+
+    $ kubectl get pods -l name=locust,role=worker
+
+**Note:** depending on the desired number of `locust-worker` Pods, the Kubernetes cluster may need to be launched with more than 3 compute engine nodes and may also need a machine type more powerful than n1-standard-1. Refer to the [`gcloud container clusters create`](https://cloud.google.com/sdk/gcloud/reference/container/clusters/create) documentation for more information.
+
+## Execute Tests
+
+To execute the Locust tests, navigate to the IP address of your locust-master-service LoadBalancer (see above) and port `8089` and enter the number of clients to spawn and the client hatch rate then start the simulation.
+
+## Deployment Cleanup
+
+To teardown the workload simulation cluster, use the following steps. First, delete the Kubernetes cluster:
+
+    $ gcloud container clusters delete CLUSTER-NAME
+
+To delete the sample web application, visit the [Google Cloud Console](https://console.cloud.google.com).
 
 ## License
 
 This code is Apache 2.0 licensed and more information can be found in `LICENSE`. For information on licenses for third party software and libraries, refer to the `docker-image/licenses` directory.
-
-

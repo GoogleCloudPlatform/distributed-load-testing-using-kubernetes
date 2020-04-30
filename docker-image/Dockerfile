@@ -32,4 +32,4 @@ EXPOSE 5557 5558 8089
 RUN chmod 755 /locust-tasks/run.sh
 
 # Start Locust using LOCUS_OPTS environment variable
-ENTRYPOINT ["/locust-tasks/run.sh"] 
+CMD ["/bin/bash", "-c", "/locust-tasks/run.sh"] 

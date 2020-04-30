@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: environment-variable
+  namespace: load-test
+data:
+  TARGET_HOST: $targetUrl
