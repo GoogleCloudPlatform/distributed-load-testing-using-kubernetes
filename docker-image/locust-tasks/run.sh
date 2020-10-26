@@ -22,7 +22,7 @@ LOCUST_MODE=${LOCUST_MODE:-standalone}
 if [[ "$LOCUST_MODE" = "master" ]]; then
     LOCUS_OPTS="$LOCUS_OPTS --master"
 elif [[ "$LOCUST_MODE" = "worker" ]]; then
-    LOCUS_OPTS="$LOCUS_OPTS --slave --master-host=$LOCUST_MASTER"
+    LOCUS_OPTS="$LOCUS_OPTS --slave --master-host=$LOCUST_MASTER_HOST"
 fi
 
 echo "$LOCUST $LOCUS_OPTS"

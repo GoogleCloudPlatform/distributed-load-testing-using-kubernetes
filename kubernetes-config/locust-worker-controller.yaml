@@ -34,7 +34,8 @@ spec:
           env:
             - name: LOCUST_MODE
               value: worker
-            - name: LOCUST_MASTER
+            - name: LOCUST_MASTER_HOST
               value: locust-master
             - name: TARGET_HOST
               value: https://[TARGET_HOST]
+      enableServiceLinks: false

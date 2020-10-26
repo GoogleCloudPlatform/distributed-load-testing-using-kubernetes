@@ -18,7 +18,7 @@
 import uuid
 
 from datetime import datetime
-from locust import HttpLocust, TaskSet, task
+from locust import HttpLocust, TaskSet, task, between
 
 
 class MetricsTaskSet(TaskSet):
@@ -40,3 +40,4 @@ class MetricsTaskSet(TaskSet):
 
 class MetricsLocust(HttpLocust):
     task_set = MetricsTaskSet
+    wait_time = between(5, 10)
