@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright 2015 Google Inc. All rights reserved.
+# Copyright 2022 Google Inc. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,8 +18,10 @@
 import uuid
 
 from datetime import datetime
-from locust import HttpLocust, TaskSet, task
+from locust import FastHttpUser, TaskSet, task
 
+
+# [START locust_test_task]
 
 class MetricsTaskSet(TaskSet):
     _deviceid = None
@@ -38,5 +40,7 @@ class MetricsTaskSet(TaskSet):
             "/metrics", {"deviceid": self._deviceid, "timestamp": datetime.now()})
 
 
-class MetricsLocust(HttpLocust):
-    task_set = MetricsTaskSet
+class MetricsLocust(FastHttpUser):
+    tasks = {MetricsTaskSet}
+
+# [END locust_test_task]
