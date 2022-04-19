@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright 2019 Google Inc. All rights reserved.
+# Copyright 2022 Google Inc. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ app = Flask(__name__)
 def root():
     return 'Welcome to the "Distributed Load Testing Using Kubernetes" sample web app\n'
 
+# [START sample_app_endpoints]
 @app.route('/login',  methods=['GET', 'POST'])
 def login():
     deviceid = request.values.get('deviceid')
@@ -33,8 +34,9 @@ def login():
 def metrics():
     deviceid = request.values.get('deviceid')
     timestamp = request.values.get('timestamp')
-    
+
     return '/metrics - device: {}, timestamp: {}\n'.format(deviceid, timestamp)
+# [END sample_app_endpoints]
 
 
 if __name__ == '__main__':

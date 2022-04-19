@@ -1,4 +1,4 @@
-# Copyright 2015 Google Inc. All rights reserved.
+# Copyright 2022 Google Inc. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,29 +12,38 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 apiVersion: "apps/v1"
 kind: "Deployment"
 metadata:
-  name: locust-worker
+  name: locust-master
   labels:
-    name: locust-worker
+    name: locust-master
 spec:
-  replicas: 5
+  replicas: 1
   selector:
     matchLabels:
-      app: locust-worker
+      app: locust-master
   template:
     metadata:
       labels:
-        app: locust-worker
+        app: locust-master
     spec:
       containers:
-        - name: locust-worker
-          image: gcr.io/[PROJECT_ID]/locust-tasks:latest
+        - name: locust-master
+          image: ${REGION}-docker.pkg.dev/${PROJECT}/${AR_REPO}/${LOCUST_IMAGE_NAME}:${LOCUST_IMAGE_TAG}
           env:
             - name: LOCUST_MODE
-              value: worker
-            - name: LOCUST_MASTER
-              value: locust-master
+              value: master
             - name: TARGET_HOST
-              value: https://[TARGET_HOST]
+              value: https://${SAMPLE_APP_TARGET}
+          ports:
+            - name: loc-master-web
+              containerPort: 8089
+              protocol: TCP
+            - name: loc-master-p1
+              containerPort: 5557
+              protocol: TCP
+            - name: loc-master-p2
+              containerPort: 5558
+              protocol: TCP

@@ -1,4 +1,4 @@
-# Copyright 2015 Google Inc. All rights reserved.
+# Copyright 2022 Google Inc. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,8 +13,8 @@
 # limitations under the License.
 
 
-# Start with a base Python 3.7.2 image
-FROM python:3.7.2
+# Start with a base image Python 3.9.12 Debian 11 (bullseye) slim 
+FROM python:3.9.12-slim-bullseye
 
 # Add the licenses for third party software and libraries
 ADD licenses /licenses

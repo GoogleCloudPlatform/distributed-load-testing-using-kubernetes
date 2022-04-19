@@ -1,4 +1,4 @@
-# Copyright 2015 Google Inc. All rights reserved.
+# Copyright 2022 Google Inc. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,10 +21,6 @@ metadata:
     app: locust-master
 spec:
   ports:
-    - port: 8089
-      targetPort: loc-master-web
-      protocol: TCP
-      name: loc-master-web
     - port: 5557
       targetPort: loc-master-p1
       protocol: TCP
@@ -33,6 +29,23 @@ spec:
       targetPort: loc-master-p2
       protocol: TCP
       name: loc-master-p2
+  selector:
+    app: locust-master
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: locust-master-web
+  annotations:
+    networking.gke.io/load-balancer-type: "Internal"
+  labels:
+    app: locust-master
+spec:
+  ports:
+    - port: 8089
+      targetPort: loc-master-web
+      protocol: TCP
+      name: loc-master-web
   selector:
     app: locust-master
   type: LoadBalancer
