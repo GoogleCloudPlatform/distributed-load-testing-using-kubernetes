@@ -6,5 +6,5 @@
         ":semanticCommitTypeAll(fix)",
         ":enableVulnerabilityAlertsWithLabel(security)",
   ],
-  rangeStrategy: "bump",
+  "rangeStrategy": "bump",
 }
