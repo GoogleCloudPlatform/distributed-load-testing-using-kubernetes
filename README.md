@@ -1,6 +1,6 @@
 ## Distributed Load Testing Using GKE and Locust
 
-This is the sample code for the [Distributed load testing using Google Kubernetes Engine](https://cloud.google.com/architecture/distributed-load-testing-using-gke) tutorial.
+This is the archived sample code for the Distributed load testing using Google Kubernetes Engine tutorial, which is now obsolete.
 
 ## License
 
